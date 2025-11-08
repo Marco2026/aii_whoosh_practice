@@ -44,7 +44,9 @@ def read_data():
         def parse_additional_features(additional_features_soup):
             additional_features = ''
             if additional_features_soup:
-                additional_features = ', '.join([c.text.strip() for c in additional_features_soup.children])
+                additional_features_soup = additional_features_soup.text.replace('Características adicionales:', '')
+                sliced_features = additional_features_soup.split(',')
+                additional_features = ', '.join([c.strip() for c in sliced_features])
             return additional_features
 
         recipes = list()

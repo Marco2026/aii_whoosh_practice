@@ -1,3 +1,4 @@
+import shutil
 import pathlib, os, ssl, urllib.request, re
 from datetime import datetime
 from bs4 import BeautifulSoup
@@ -50,8 +51,37 @@ def read_data():
     return data
 
 def load():
+    res = messagebox.askyesno(title="Confirmar",message="Esta seguro que quiere recargar los datos. \nEsta operaciÃ³n puede ser lenta")
+    if res:
+        save_data()
+
+def save_data():
+    schem = Schema(
+        title=TEXT(stored=True, phrase=False),
+        comensales=NUMERIC(int, stored=True), # Mejor para rangos y exactitud
+        author=ID(stored=True),              # Mejor para búsquedas de nombres exactos
+        update_date=DATETIME(stored=True),
+        additional_features=KEYWORD(stored=True, commas=True, lowercase=True), # KEYWORD con commas=True para buscar etiquetas separadas como un todo
+        introduction=TEXT(stored=True, phrase=False)
+    )
+    if os.path.exists("Index"):
+        shutil.rmtree("Index")
+    os.mkdir("Index")
+    
+    ix= create_in("Index", schema=schem)
+    writer = ix.writer()
+    i= 0
     data = read_data()
-    pass
+    for recipe in data:
+        writer.add_document(title=recipe[0], 
+                            guests=int(recipe[1]), 
+                            author=recipe[2] if recipe[2] else 'Unknown', 
+                            update_date=recipe[3] if recipe[3] else datetime.now(), 
+                            additional_features=recipe[4] if recipe[4] else 'None', 
+                            introduction=recipe[5] if recipe[5] else 'None')
+        i+=1
+    writer.commit()
+    messagebox.showinfo("Fin de indexado", "Se han indexado {} recetas".format(i))
 
 def title_or_introduction():
     pass

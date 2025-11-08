@@ -55,7 +55,7 @@ def read_data():
             author = soup.find('div', class_='nombre_autor').a.text.strip() if soup.find('div', class_='nombre_autor').a else 'Unknown'
             update_date = soup.find('span', class_='date_publish').text.strip() if soup.find('span', class_='date_publish') else 'Unknown'
             additional_features = soup.find('div', class_='properties inline') if soup.find('div', class_='properties inline') else 'Unknown'
-            introduction = None
+            introduction = soup.find('div', class_='intro').text.strip() if soup.find('div', class_='intro') else 'Unknown'
             recipe = (title, parse_guests(guests), author, parse_update_date(update_date), parse_additional_features(additional_features), introduction)
             print(recipe)
             recipes.append(recipe)

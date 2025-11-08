@@ -21,7 +21,7 @@ def read_data():
         uris = []
         uri = "https://www.recetasgratis.net/Recetas-de-Aperitivos-tapas-listado_receta-1_1.html"
         f = urllib.request.urlopen(uri)
-        s = BeautifulSoup(f, "lxml")
+        s = BeautifulSoup(f.read().decode('UTF-8'), "lxml")
         container = s.find("div", class_="clear padding-left-1")
         url_divs = container.find_all("a", href=True)
         for ud in url_divs:
@@ -36,6 +36,13 @@ def read_data():
             slices = [slices[-3], slices[-2], slices[-1]]
             modified_date = f"{slices[0]} {months[slices[1]]} {slices[2]}"
             return datetime.strptime(modified_date, '%d %m %Y').strftime('%Y%m%d')
+        
+        def parse_additional_features(additional_features_soup):
+            additional_features = ''
+            if additional_features_soup:
+                additional_features = ', '.join([c.text.strip() for c in additional_features_soup.children])
+            return additional_features[1:]
+
 
         recipes = list()
         for r in recipes_uris:
@@ -45,9 +52,10 @@ def read_data():
             guests = soup.find('span', class_='property unidades').text.strip() if soup.find('span', class_='property unidades') else 'Unknown'
             author = soup.find('a', attrs={'rel':'nofollow'}).text.strip() if soup.find('a', attrs={'rel':'nofollow'}) else 'Unknown'
             update_date = soup.find('span', class_='date_publish').text.strip() if soup.find('span', class_='date_publish') else 'Unknown'
-            additional_features = None
+            additional_features = soup.find('div', class_='properties inline') if soup.find('div', class_='properties inline') else 'Unknown'
             introduction = None
-            recipe = (title, guests, author, parse_update_date(update_date), additional_features, introduction)
+            recipe = (title, guests, author, parse_update_date(update_date), parse_additional_features(additional_features), introduction)
+            print(recipe)
             recipes.append(recipe)
         return recipes
 
@@ -91,4 +99,4 @@ def main_window():
     root.mainloop()
 
 if __name__ == '__main__':
-    main_window()
+    read_data()

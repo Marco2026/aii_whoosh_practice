@@ -18,7 +18,16 @@ indexdir = base_dir / 'indexdir'
 
 def read_data():
     def obtain_recipes_uris():
-        pass
+        uris = []
+        uri = "https://www.recetasgratis.net/Recetas-de-Aperitivos-tapas-listado_receta-1_1.html"
+        f = urllib.request.urlopen(uri)
+        s = BeautifulSoup(f, "lxml")
+        container = s.find("div", class_="clear padding-left-1")
+        url_divs = container.find_all("a", href=True)
+        for ud in url_divs:
+            uris.append(ud['href'])
+        print(uris)
+        return uris
 
     def obtain_recipes_from_uris(recipes_uris):
         pass
@@ -62,4 +71,4 @@ def main_window():
     root.mainloop()
 
 if __name__ == '__main__':
-    main_window()
+    read_data()

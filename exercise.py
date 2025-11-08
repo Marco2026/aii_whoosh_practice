@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 from tkinter import *
 from tkinter import messagebox
 from whoosh.index import create_in, open_dir
-from whoosh.fields import Schema, TEXT, ID, KEYWORD, DATETIME
+from whoosh.fields import Schema, TEXT, ID, KEYWORD, DATETIME, NUMERIC
 from whoosh.qparser import MultifieldParser, QueryParser, OrGroup
 
 
@@ -77,7 +77,7 @@ def load():
 def save_data():
     schem = Schema(
         title=TEXT(stored=True, phrase=False),
-        comensales=NUMERIC(int, stored=True), # Mejor para rangos y exactitud
+        guests=NUMERIC(int, stored=True), # Mejor para rangos y exactitud
         author=ID(stored=True),              # Mejor para búsquedas de nombres exactos
         update_date=DATETIME(stored=True),
         additional_features=KEYWORD(stored=True, commas=True, lowercase=True), # KEYWORD con commas=True para buscar etiquetas separadas como un todo

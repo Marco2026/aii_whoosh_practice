@@ -21,7 +21,20 @@ def read_data():
         pass
 
     def obtain_recipes_from_uris(recipes_uris):
-        pass
+        recipes = list()
+        for r in recipes_uris:
+            raw_data = urllib.request.urlopen(r).read().decode('UTF-8')
+            soup = BeautifulSoup(raw_data, 'lxml')
+            title = soup.find('h1', class_='titulo titulo--articulo').text.strip() if soup.find('h1', class_='titulo titulo--articulo') else 'Unknown'
+            guests = soup.find('span', class_='property unidades').text.strip() if soup.find('span', class_='property unidades') else 'Unknown'
+            author = None
+            update_date = None
+            additional_features = None
+            introduction = None
+            recipe = (title, guests, author, update_date, additional_features, introduction)
+            recipes.append(recipe)
+        return recipes
+
 
     recipes_uris = obtain_recipes_uris()
     data = obtain_recipes_from_uris(recipes_uris)

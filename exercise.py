@@ -37,24 +37,26 @@ def read_data():
             modified_date = f"{slices[0]} {months[slices[1]]} {slices[2]}"
             return datetime.strptime(modified_date, '%d %m %Y').strftime('%Y%m%d')
         
+        def parse_guests(guests):
+            return int(guests[:2].strip())
+        
         def parse_additional_features(additional_features_soup):
             additional_features = ''
             if additional_features_soup:
                 additional_features = ', '.join([c.text.strip() for c in additional_features_soup.children])
-            return additional_features[1:]
-
+            return additional_features
 
         recipes = list()
         for r in recipes_uris:
             raw_data = urllib.request.urlopen(r).read().decode('UTF-8')
             soup = BeautifulSoup(raw_data, 'lxml')
             title = soup.find('h1', class_='titulo titulo--articulo').text.strip() if soup.find('h1', class_='titulo titulo--articulo') else 'Unknown'
-            guests = soup.find('span', class_='property unidades').text.strip() if soup.find('span', class_='property unidades') else 'Unknown'
-            author = soup.find('a', attrs={'rel':'nofollow'}).text.strip() if soup.find('a', attrs={'rel':'nofollow'}) else 'Unknown'
+            guests = soup.find('span', class_='property comensales').text.strip() if soup.find('span', class_='property comensales') else '-1'
+            author = soup.find('div', class_='nombre_autor').a.text.strip() if soup.find('div', class_='nombre_autor').a else 'Unknown'
             update_date = soup.find('span', class_='date_publish').text.strip() if soup.find('span', class_='date_publish') else 'Unknown'
             additional_features = soup.find('div', class_='properties inline') if soup.find('div', class_='properties inline') else 'Unknown'
             introduction = None
-            recipe = (title, guests, author, parse_update_date(update_date), parse_additional_features(additional_features), introduction)
+            recipe = (title, parse_guests(guests), author, parse_update_date(update_date), parse_additional_features(additional_features), introduction)
             print(recipe)
             recipes.append(recipe)
         return recipes

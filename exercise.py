@@ -30,17 +30,24 @@ def read_data():
         return uris
 
     def obtain_recipes_from_uris(recipes_uris):
+        def parse_update_date(update_date):
+            months = {'enero': '01', 'febrero': '02', 'marzo': '03', 'abril': '04', 'mayo': '05', 'junio': '06', 'julio': '07', 'agosto': '08', 'septiembre': '09', 'octubre': '10', 'noviembre': '11', 'diciembre': '12'}
+            slices = update_date.lower().split()
+            slices = [slices[-3], slices[-2], slices[-1]]
+            modified_date = f"{slices[0]} {months[slices[1]]} {slices[2]}"
+            return datetime.strptime(modified_date, '%d %m %Y').strftime('%Y%m%d')
+
         recipes = list()
         for r in recipes_uris:
             raw_data = urllib.request.urlopen(r).read().decode('UTF-8')
             soup = BeautifulSoup(raw_data, 'lxml')
             title = soup.find('h1', class_='titulo titulo--articulo').text.strip() if soup.find('h1', class_='titulo titulo--articulo') else 'Unknown'
             guests = soup.find('span', class_='property unidades').text.strip() if soup.find('span', class_='property unidades') else 'Unknown'
-            author = None
-            update_date = None
+            author = soup.find('a', attrs={'rel':'nofollow'}).text.strip() if soup.find('a', attrs={'rel':'nofollow'}) else 'Unknown'
+            update_date = soup.find('span', class_='date_publish').text.strip() if soup.find('span', class_='date_publish') else 'Unknown'
             additional_features = None
             introduction = None
-            recipe = (title, guests, author, update_date, additional_features, introduction)
+            recipe = (title, guests, author, parse_update_date(update_date), additional_features, introduction)
             recipes.append(recipe)
         return recipes
 
@@ -84,4 +91,4 @@ def main_window():
     root.mainloop()
 
 if __name__ == '__main__':
-    read_data()
+    main_window()

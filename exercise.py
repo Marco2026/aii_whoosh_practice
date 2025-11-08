@@ -133,4 +133,4 @@ def main_window():
     root.mainloop()
 
 if __name__ == '__main__':
-    read_data()
+    main_window()

@@ -111,6 +111,26 @@ def date():
 def features_and_title():
     pass
 
+def list_results(results):
+    v = Toplevel()
+    sc = Scrollbar(v)
+    sc.pack(side=RIGHT, fill=Y)
+    lb = Listbox(v, width=150, yscrollcommand=sc.set)
+    for row in results:
+        s = 'TITLE: ' + row['title']
+        lb.insert(END, s)       
+        s = 'GUESTS: ' + str(row['guests'])
+        lb.insert(END, s)
+        s = "AUTHOR: " + row['author']
+        lb.insert(END, s)
+        s = "UPDATE DATE: " + str(row['update_date'])
+        lb.insert(END, s)
+        s = "ADDITIONAL FEATURES: " + str(row['additional_features'])
+        lb.insert(END, s)
+        lb.insert(END,"------------------------------------------------------------------------\n")
+    lb.pack(side=LEFT, fill=BOTH)
+    sc.config(command=lb.yview)
+
 def main_window():
     root = Tk()
     menu = Menu(root)

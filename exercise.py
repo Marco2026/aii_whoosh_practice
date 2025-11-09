@@ -7,6 +7,7 @@ from tkinter import messagebox
 from whoosh.index import create_in, open_dir
 from whoosh.fields import Schema, TEXT, ID, KEYWORD, DATETIME, NUMERIC
 from whoosh.qparser import MultifieldParser, QueryParser, OrGroup
+from whoosh import qparser, index, query
 
 
 if (not os.environ.get('PYTHONHTTPSVERIFY', '') and getattr(ssl, '_create_unverified_context', None)):
@@ -132,12 +133,19 @@ def list_results(results):
     sc.config(command=lb.yview)
 
 def main_window():
+    def list_all():
+        ix=open_dir("Index")
+        with ix.searcher() as searcher:
+            results = searcher.search(query.Every(),limit=None)
+            list_results(results)
+    
     root = Tk()
     menu = Menu(root)
 
     # DATA
     datamenu = Menu(menu, tearoff=0)
     datamenu.add_command(label="Load", command=load)
+    datamenu.add_command(label="List", command=list_all)
     datamenu.add_command(label="Exit", command=root.quit)
     menu.add_cascade(label="Data", menu=datamenu)
 

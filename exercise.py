@@ -132,13 +132,13 @@ def list_results(results):
     lb.pack(side=LEFT, fill=BOTH)
     sc.config(command=lb.yview)
 
-def main_window():
-    def list_all():
+def list_all():
         ix=open_dir("Index")
         with ix.searcher() as searcher:
             results = searcher.search(query.Every(),limit=None)
             list_results(results)
-    
+
+def main_window():    
     root = Tk()
     menu = Menu(root)
 
